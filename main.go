@@ -25,7 +25,6 @@ func main() {
 	}
 
 	log.Fatal(server.ListenAndServe())
-	delivery.Controller(r)
 
 }
 

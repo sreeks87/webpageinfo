@@ -7,14 +7,13 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/sreeks87/webpageinfo/pageinfo/domain"
 	svc "github.com/sreeks87/webpageinfo/pageinfo/service"
 )
 
-func Controller(r *mux.Router) {
-	route(r)
-}
+// func Controller(r *mux.Router) {
+// 	route(r)
+// }
 
 func Heartbeat(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, bytes.NewBuffer([]byte(`{"Status":"Ok"}`)))
