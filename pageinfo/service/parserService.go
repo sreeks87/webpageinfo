@@ -1,7 +1,8 @@
 package service
 
 import (
-	"fmt"
+	"log"
+	u "net/url"
 	"strings"
 	"sync"
 
@@ -9,19 +10,62 @@ import (
 	"github.com/sreeks87/webpageinfo/pageinfo/domain"
 )
 
+const PASSWORD = "password"
+
 func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
 
-	go parseHead(doc)
-	go parseLinks(doc, url)
-	go parseTitle(doc)
+	head, e := parseHead(doc)
+	if e != nil {
+		return domain.Pageinfo{}, e
+	}
+	links, e := parseLinks(doc, url)
+	if e != nil {
+		return domain.Pageinfo{}, e
+	}
+	title, e := parseTitle(doc)
+	if e != nil {
+		return domain.Pageinfo{}, e
+	}
+	version, e := parseHtmlVersion(doc)
+	if e != nil {
+		return domain.Pageinfo{}, e
+	}
+	login, e := parseLoginForm(doc)
+	if e != nil {
+		return domain.Pageinfo{}, e
+	}
 
-	return domain.Pageinfo{}, nil
+	pageinfo := domain.Pageinfo{
+		HTMLVersion: version,
+		PageTitle:   title,
+		HeadingData: head,
+		LinkData:    links,
+		LoginForm:   login,
+		Error:       nil,
+	}
+
+	return pageinfo, nil
+}
+func parseHtmlVersion(doc *goquery.Document) (string, error) {
+	return "1", nil
+}
+func parseLoginForm(doc *goquery.Document) (bool, error) {
+	found := false
+	doc.Find("form").Each(func(i int, s *goquery.Selection) {
+		log.Println(s.Attr("class"))
+		log.Println(s.Find("input"))
+		if v, _ := s.Attr("type"); v == PASSWORD {
+			found = true
+		}
+	})
+	log.Println("password ", found)
+	return found, nil
 }
 
 func parseHead(doc *goquery.Document) (domain.Head, error) {
 	head := map[string]int{"h1": 0, "h2": 0, "h3": 0, "h4": 0, "h5": 0, "h6": 0}
-	for k, v := range head {
-		fmt.Println("-------------------------HEADING ", v, "---------------------")
+	for k, _ := range head {
+		log.Println("-------------------------HEADING ", k, "---------------------")
 		doc.Find(k).Each(func(i int, s *goquery.Selection) {
 			head[k] += 1
 		})
@@ -38,10 +82,12 @@ func parseHead(doc *goquery.Document) (domain.Head, error) {
 	return headCount, nil
 }
 func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
-	fmt.Println("-------------------------Links---------------------")
+	log.Println("-------------------------Links---------------------")
+	parsedURL, _ := u.Parse(url)
+	baseURL := parsedURL.Scheme + "://" + parsedURL.Host
 	var exLink int
 	var inLink int
-	var urlSlice []string
+	urlSet := make(map[string]bool)
 	var inAccessLink = make(chan int)
 	// pattern := fmt.Sprintf("[%s]?", url)
 	// r, _ := regexp.Compile(pattern)
@@ -49,32 +95,37 @@ func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
 		t, _ := s.Attr("href")
 		// assumption made : an internal link contains either the url as the starting part or /
 		// https://www.google.com/contact and /blog will be considered as internal link for url ->www.google.com
-		if strings.HasPrefix(t, url) {
-			fmt.Println("internal link ->", t)
+		if strings.HasPrefix(t, baseURL) {
+			log.Println("internal link ->", t)
 			inLink += 1
-			urlSlice = append(urlSlice, url)
+			if !urlSet[t] {
+				urlSet[t] = true
+			}
 		} else if strings.HasPrefix(t, "/") {
-			fmt.Println("internal link without url->", t)
+			log.Println("internal link without url->", t)
 			inLink += 1
-			urlSlice = append(urlSlice, url+t)
+			if !urlSet[t] {
+				urlSet[baseURL+t] = true
+			}
 		} else {
-			fmt.Println("external link ->", t)
-			exLink += 1
+			if strings.HasPrefix(t, "http") {
+				log.Println("external link ->", t)
+				exLink += 1
+			}
 		}
 	})
 
-	fmt.Println("internal links count ", inLink)
-	fmt.Println("external links count ", exLink)
-	fmt.Println("links to access ", urlSlice)
+	log.Println("internal links count ", inLink)
+	log.Println("external links count ", exLink)
+	log.Println("links to access ", urlSet)
 
 	var wg sync.WaitGroup
-	for _, link := range urlSlice {
+	for link, _ := range urlSet {
 		wg.Add(1)
 		go concurrentLinkAccess(link, &wg, inAccessLink)
 	}
 
-	wg.Wait()
-	close(inAccessLink)
+	go checkChan(&wg, inAccessLink)
 	links := domain.Links{
 		InternalLinks:     inLink,
 		ExternalLinks:     exLink,
@@ -89,20 +140,29 @@ func parseTitle(doc *goquery.Document) (string, error) {
 	var title string
 	doc.Find("title").Each(func(i int, s *goquery.Selection) {
 		title = s.Text()
-		fmt.Println("title ->", title)
+		log.Println("title ->", title)
 	})
 	return title, nil
 }
 
 func concurrentLinkAccess(link string, wg *sync.WaitGroup, out chan<- int) {
+
 	defer wg.Done()
 	var count int
 	resp, err := scrape(link)
 	if err != nil {
 		count += 1
+	} else {
+		log.Println("response code for ", link, " ", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			count += 1
+		}
 	}
-	if resp.StatusCode != 200 {
-		count += 1
-	}
+	log.Println("inside concurrent access ", link)
 	out <- count
+}
+
+func checkChan(wg *sync.WaitGroup, ch chan int) {
+	wg.Wait()
+	close(ch)
 }

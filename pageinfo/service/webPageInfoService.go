@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
@@ -26,6 +27,7 @@ func Extract(r *domain.Request) (domain.Pageinfo, error) {
 }
 
 func scrape(url string) (*http.Response, error) {
+	log.Println("scraping ", url)
 	resp, e := http.Get(url)
 	if e != nil {
 		return nil, e
