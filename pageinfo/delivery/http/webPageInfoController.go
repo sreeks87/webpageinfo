@@ -16,11 +16,11 @@ func Controller(r *mux.Router) {
 	route(r)
 }
 
-func heartbeat(w http.ResponseWriter, r *http.Request) {
+func Heartbeat(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, bytes.NewBuffer([]byte(`{"Status":"Ok"}`)))
 }
 
-func webpageinfo(w http.ResponseWriter, r *http.Request) {
+func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 	req, e := ioutil.ReadAll(r.Body)
 	var resp domain.Pageinfo
 	if len(req) == 0 {

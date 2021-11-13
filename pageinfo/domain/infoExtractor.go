@@ -4,8 +4,8 @@ type Pageinfo struct {
 	HTMLVersion string `json:"htmlversion"`
 	PageTitle   string `json:"pagetitle"`
 	HeadingData Head   `json:"headings"`
-	LinkData    Links  `json:"Links"`
-	LoginForm   bool   `json:"loginfrom"`
+	LinkData    Links  `json:"links"`
+	LoginForm   bool   `json:"loginform"`
 	Error       error  `json:"error"`
 }
 

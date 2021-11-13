@@ -13,22 +13,8 @@ import (
 // The mian function, eveything starts from here
 func main() {
 	// Creating a new router
-	r := mux.NewRouter()
 
-	// reading the template folder that hosts the ui files
-	// templateDir := http.Dir("./ui/")
-
-	// handling url error with ui in url
-	// uiHandler := http.StripPrefix("/ui/", http.FileServer(templateDir))
-
-	// handling the ui path prefix
-	// handling heartbeat url
-	// making strictslash true
-	// r.PathPrefix("/ui/").Handler(uiHandler).Methods("GET")
-	// r.StrictSlash(true)
-	// r.HandleFunc("/heartbeat", heartbeat).Methods("GET")
-	delivery.Controller(r)
-
+	r := newRouter()
 	// creating the server with minimum config
 	// define the minimum server config
 	server := &http.Server{
@@ -39,6 +25,27 @@ func main() {
 	}
 
 	log.Fatal(server.ListenAndServe())
+	delivery.Controller(r)
+
 }
 
-// the actual handler responsible for writing back to the UI
+func newRouter() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/webpageinfo", delivery.Webpageinfo).Methods("POST")
+	r.HandleFunc("/heartbeat", delivery.Heartbeat).Methods("GET")
+
+	// reading the template folder that hosts the ui files
+	templateDir := http.Dir("./ui/")
+
+	// handling url error with ui in url
+	uiHandler := http.StripPrefix("/ui/", http.FileServer(templateDir))
+
+	// handling the ui path prefix
+	// handling heartbeat url
+	// making strictslash true
+	r.PathPrefix("/ui/").Handler(uiHandler).Methods("GET")
+	// r.StrictSlash(true)
+	// r.HandleFunc("/heartbeat", heartbeat).Methods("GET")
+
+	return r
+}
