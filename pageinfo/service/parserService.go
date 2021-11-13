@@ -46,21 +46,29 @@ func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
 
 	return pageinfo, nil
 }
+
+// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+// <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+// common part --> -//W3C//DTD [----]//EN
 func parseHtmlVersion(doc *goquery.Document) (string, error) {
-	doc.Contents().Each(func(i int, s *goquery.Selection) {
-		log.Println(goquery.NodeName(s))
-		c, _ := s.Attr("text")
-		log.Println("HTML", c)
-	})
-	return "1", nil
+	commonStart := "-//W3C//DTD"
+	commonEnd := "//EN"
+	version := "HTML 5.0"
+	if len(doc.Selection.Nodes) > 0 {
+		if len(doc.Selection.Nodes[0].FirstChild.Attr) > 0 {
+			vString := doc.Selection.Nodes[0].FirstChild.Attr[0].Val
+			version = strings.Replace(vString, commonStart, "", 1)
+			version = strings.Replace(version, commonEnd, "", 1)
+		}
+	}
+	log.Println(doc.Children())
+	return version, nil
 }
 func parseLoginForm(doc *goquery.Document) (bool, error) {
 	found := false
 	doc.Find("input").EachWithBreak(func(i int, s *goquery.Selection) bool {
-		c, _ := s.Attr("class")
 		in, _ := s.Attr("type")
-		log.Println(c)
-		log.Println(in)
+		log.Println("form input type ", in)
 		if v, _ := s.Attr("type"); v == PASSWORD {
 			found = true
 			return false

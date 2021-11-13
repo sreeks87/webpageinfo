@@ -15,7 +15,11 @@ func Extract(r *domain.Request) (domain.Pageinfo, error) {
 		return domain.Pageinfo{}, e
 	}
 	defer resp.Body.Close()
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	body := resp.Body
+	if e != nil {
+		return domain.Pageinfo{}, nil
+	}
+	doc, err := goquery.NewDocumentFromReader(body)
 	if err != nil {
 		return domain.Pageinfo{}, err
 	}
