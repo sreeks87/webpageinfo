@@ -34,7 +34,7 @@ func webpageinfo(w http.ResponseWriter, r *http.Request) {
 	var requestObj domain.Request
 	json.Unmarshal(req, &requestObj)
 
-	resp, err := svc.Extract(requestObj)
+	resp, err := svc.Extract(&requestObj)
 	if err != nil {
 		HandlePOSTError(400, resp, w)
 		return

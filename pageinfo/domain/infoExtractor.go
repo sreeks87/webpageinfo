@@ -6,6 +6,7 @@ type Pageinfo struct {
 	HeadingData Head   `json:"headings"`
 	LinkData    Links  `json:"Links"`
 	LoginForm   bool   `json:"loginfrom"`
+	Error       error  `json:"error"`
 }
 
 type Links struct {
