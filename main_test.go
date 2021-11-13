@@ -22,7 +22,7 @@ func TestHandleUI(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	// the actual handler to test
-	handler := http.HandlerFunc(ui)
+	handler := http.HandlerFunc(heartbeat)
 	// serve the http server
 	handler.ServeHTTP(rec, r)
 
@@ -43,7 +43,7 @@ func TestHandleUINotExists(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	// the actual handler to test
-	handler := http.HandlerFunc(ui)
+	handler := http.HandlerFunc(heartbeat)
 	// serve the http server
 	handler.ServeHTTP(rec, r)
 

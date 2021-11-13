@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -22,10 +21,14 @@ func main() {
 	uiHandler := http.StripPrefix("/ui/", http.FileServer(templateDir))
 
 	// handling the ui path prefix
-	r.PathPrefix("/ui/").Handler(uiHandler).Methods("GET")
+	// handling heartbeat url
+	// making strictslash true
+	r.PathPrefix("/").Handler(uiHandler).Methods("GET")
+	r.StrictSlash(true)
+	// r.HandleFunc("/heartbeat", heartbeat).Methods("GET")
 
 	// creating the server with minimum config
-	// define the different timeouts below
+	// define the minimum server config
 	server := &http.Server{
 		Handler:      r,
 		Addr:         config.ADDRESS,
@@ -33,12 +36,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	// handle the get for the UI
-	r.HandleFunc("/ui", ui).Methods("GET")
 	log.Fatal(server.ListenAndServe())
 }
 
 // the actual handler responsible for writing back to the UI
-func ui(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "The ui is up...")
-}
