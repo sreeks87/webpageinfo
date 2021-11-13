@@ -17,11 +17,11 @@ type Links struct {
 
 type Head struct {
 	H1 int `json:"h1count"`
-	H2 int `json:"h1count"`
-	H3 int `json:"h1count"`
-	H4 int `json:"h1count"`
-	H5 int `json:"h1count"`
-	H6 int `json:"h1count"`
+	H2 int `json:"h2count"`
+	H3 int `json:"h3count"`
+	H4 int `json:"h4count"`
+	H5 int `json:"h5count"`
+	H6 int `json:"h6count"`
 }
 
 type Request struct {

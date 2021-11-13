@@ -47,16 +47,25 @@ func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
 	return pageinfo, nil
 }
 func parseHtmlVersion(doc *goquery.Document) (string, error) {
+	doc.Contents().Each(func(i int, s *goquery.Selection) {
+		log.Println(goquery.NodeName(s))
+		c, _ := s.Attr("text")
+		log.Println("HTML", c)
+	})
 	return "1", nil
 }
 func parseLoginForm(doc *goquery.Document) (bool, error) {
 	found := false
-	doc.Find("form").Each(func(i int, s *goquery.Selection) {
-		log.Println(s.Attr("class"))
-		log.Println(s.Find("input"))
+	doc.Find("input").EachWithBreak(func(i int, s *goquery.Selection) bool {
+		c, _ := s.Attr("class")
+		in, _ := s.Attr("type")
+		log.Println(c)
+		log.Println(in)
 		if v, _ := s.Attr("type"); v == PASSWORD {
 			found = true
+			return false
 		}
+		return true
 	})
 	log.Println("password ", found)
 	return found, nil
@@ -138,9 +147,10 @@ func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
 
 func parseTitle(doc *goquery.Document) (string, error) {
 	var title string
-	doc.Find("title").Each(func(i int, s *goquery.Selection) {
+	doc.Find("title").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		title = s.Text()
 		log.Println("title ->", title)
+		return false
 	})
 	return title, nil
 }
