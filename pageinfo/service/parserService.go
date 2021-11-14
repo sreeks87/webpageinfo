@@ -12,25 +12,35 @@ import (
 
 const PASSWORD = "password"
 
-func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
+type parserSVC struct {
+	doc *goquery.Document
+}
 
-	head, e := parseHead(doc)
+func NewParserSvc(d *goquery.Document) domain.Parser {
+	return &parserSVC{
+		doc: d,
+	}
+}
+
+func (parser *parserSVC) ParsePage(url string) (domain.Pageinfo, error) {
+
+	head, e := parser.ParseHead()
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
-	links, e := parseLinks(doc, url)
+	links, e := parser.ParseLinks(url)
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
-	title, e := parseTitle(doc)
+	title, e := parser.ParseTitle()
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
-	version, e := parseHtmlVersion(doc)
+	version, e := parser.ParseHtmlVersion()
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
-	login, e := parseLoginForm(doc)
+	login, e := parser.ParseLoginForm()
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
@@ -50,23 +60,23 @@ func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
 // <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 // <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 // common part --> -//W3C//DTD [----]//EN
-func parseHtmlVersion(doc *goquery.Document) (string, error) {
+func (parser *parserSVC) ParseHtmlVersion() (string, error) {
 	commonStart := "-//W3C//DTD"
 	commonEnd := "//EN"
 	version := "HTML 5.0"
-	if len(doc.Selection.Nodes) > 0 {
-		if len(doc.Selection.Nodes[0].FirstChild.Attr) > 0 {
-			vString := doc.Selection.Nodes[0].FirstChild.Attr[0].Val
+	if len(parser.doc.Selection.Nodes) > 0 {
+		if len(parser.doc.Selection.Nodes[0].FirstChild.Attr) > 0 {
+			vString := parser.doc.Selection.Nodes[0].FirstChild.Attr[0].Val
 			version = strings.Replace(vString, commonStart, "", 1)
 			version = strings.Replace(version, commonEnd, "", 1)
 		}
 	}
-	log.Println(doc.Children())
+	log.Println(parser.doc.Children())
 	return version, nil
 }
-func parseLoginForm(doc *goquery.Document) (bool, error) {
+func (parser *parserSVC) ParseLoginForm() (bool, error) {
 	found := false
-	doc.Find("input").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	parser.doc.Find("input").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		in, _ := s.Attr("type")
 		log.Println("form input type ", in)
 		if v, _ := s.Attr("type"); v == PASSWORD {
@@ -79,11 +89,11 @@ func parseLoginForm(doc *goquery.Document) (bool, error) {
 	return found, nil
 }
 
-func parseHead(doc *goquery.Document) (domain.Head, error) {
+func (parser *parserSVC) ParseHead() (domain.Head, error) {
 	head := map[string]int{"h1": 0, "h2": 0, "h3": 0, "h4": 0, "h5": 0, "h6": 0}
 	for k, _ := range head {
 		log.Println("-------------------------HEADING ", k, "---------------------")
-		doc.Find(k).Each(func(i int, s *goquery.Selection) {
+		parser.doc.Find(k).Each(func(i int, s *goquery.Selection) {
 			head[k] += 1
 		})
 	}
@@ -98,7 +108,7 @@ func parseHead(doc *goquery.Document) (domain.Head, error) {
 
 	return headCount, nil
 }
-func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
+func (parser *parserSVC) ParseLinks(url string) (domain.Links, error) {
 	log.Println("-------------------------Links---------------------")
 	parsedURL, _ := u.Parse(url)
 	baseURL := parsedURL.Scheme + "://" + parsedURL.Host
@@ -108,7 +118,7 @@ func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
 	var inAccessLink = make(chan int)
 	// pattern := fmt.Sprintf("[%s]?", url)
 	// r, _ := regexp.Compile(pattern)
-	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+	parser.doc.Find("a").Each(func(i int, s *goquery.Selection) {
 		t, _ := s.Attr("href")
 		// assumption made : an internal link contains either the url as the starting part or /
 		// https://www.google.com/contact and /blog will be considered as internal link for url ->www.google.com
@@ -153,9 +163,9 @@ func parseLinks(doc *goquery.Document, url string) (domain.Links, error) {
 
 }
 
-func parseTitle(doc *goquery.Document) (string, error) {
+func (parser *parserSVC) ParseTitle() (string, error) {
 	var title string
-	doc.Find("title").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	parser.doc.Find("title").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		title = s.Text()
 		log.Println("title ->", title)
 		return false
@@ -167,7 +177,11 @@ func concurrentLinkAccess(link string, wg *sync.WaitGroup, out chan<- int) {
 
 	defer wg.Done()
 	var count int
-	resp, err := scrape(link)
+	r := domain.Request{
+		URL: link,
+	}
+	svc := NewExtractorService(r)
+	resp, err := svc.Scrape()
 	if err != nil {
 		count += 1
 	} else {

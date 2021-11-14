@@ -16,25 +16,29 @@ func Heartbeat(w http.ResponseWriter, r *http.Request) {
 }
 
 func Webpageinfo(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		HandlePOSTError(http.StatusBadRequest, "request body cant be empty", w)
+		return
+	}
 	req, e := ioutil.ReadAll(r.Body)
 	var resp domain.Pageinfo
-	if len(req) == 0 {
+	if len(req) == 0 || req == nil {
 
-		HandlePOSTError(400, e.Error(), w)
+		HandlePOSTError(http.StatusBadRequest, "request is nil or empty", w)
 		return
 	}
 	if e != nil {
 
-		HandlePOSTError(400, e.Error(), w)
+		HandlePOSTError(http.StatusBadRequest, e.Error(), w)
 		return
 	}
 	var requestObj domain.Request
 	json.Unmarshal(req, &requestObj)
-
-	resp, err := svc.Extract(&requestObj)
+	exSvc := svc.NewExtractorService(requestObj)
+	resp, err := exSvc.Extract()
 	if err != nil {
 
-		HandlePOSTError(400, err.Error(), w)
+		HandlePOSTError(http.StatusBadRequest, err.Error(), w)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

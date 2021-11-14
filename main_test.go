@@ -8,44 +8,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleUI(t *testing.T) {
-	// create a dummy http serverfor tests
+func TestRouter(t *testing.T) {
+	r := newRouter()
+	mockSer := httptest.NewServer(r)
 
-	r, e := http.NewRequest("GET", "/ui", nil)
-
-	// handle any error from above
+	resp, e := http.Get(mockSer.URL + "/heartbeat")
 	if e != nil {
 		t.Fatal(e)
 	}
 
-	// create a new recorder to test the service
-	rec := httptest.NewRecorder()
-
-	// the actual handler to test
-	handler := http.HandlerFunc(heartbeat)
-	// serve the http server
-	handler.ServeHTTP(rec, r)
-
-	assert.Equal(t, rec.Code, 200)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
 }
 
-func TestHandleUINotExists(t *testing.T) {
-	// create a dummy http serverfor tests
+func TestRouterInvalidRoute(t *testing.T) {
+	r := newRouter()
+	mockSer := httptest.NewServer(r)
 
-	r, e := http.NewRequest("GET", "/uinonexistent", nil)
-
-	// handle any error from above
+	resp, e := http.Get(mockSer.URL + "/heartbeatdffd")
 	if e != nil {
 		t.Fatal(e)
 	}
 
-	// create a new recorder to test the service
-	rec := httptest.NewRecorder()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
 
-	// the actual handler to test
-	handler := http.HandlerFunc(heartbeat)
-	// serve the http server
-	handler.ServeHTTP(rec, r)
+func TestRouterInvalidMethod(t *testing.T) {
+	r := newRouter()
+	mockSer := httptest.NewServer(r)
 
-	assert.Equal(t, rec.Code, 404)
+	resp, e := http.Post(mockSer.URL+"/heartbeat", "", nil)
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	assert.Equal(t, resp.StatusCode, http.StatusMethodNotAllowed)
+}
+
+func TestRouterInvalidMethod2(t *testing.T) {
+	r := newRouter()
+	mockSer := httptest.NewServer(r)
+
+	resp, e := http.Get(mockSer.URL + "/webpageinfo")
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	assert.Equal(t, resp.StatusCode, http.StatusMethodNotAllowed)
 }

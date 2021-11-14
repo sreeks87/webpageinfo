@@ -11,15 +11,25 @@ import (
 	"github.com/sreeks87/webpageinfo/pageinfo/domain"
 )
 
-func Extract(r *domain.Request) (domain.Pageinfo, error) {
+type extractorSVC struct {
+	request domain.Request
+}
 
-	e := Validate(r)
+func NewExtractorService(r domain.Request) domain.Service {
+	return &extractorSVC{
+		request: r,
+	}
+}
+
+func (svc *extractorSVC) Extract() (domain.Pageinfo, error) {
+
+	e := svc.Validate()
 	if e != nil {
 		log.Println("request validation failed")
 		return domain.Pageinfo{}, e
 
 	}
-	resp, e := scrape(r.URL)
+	resp, e := svc.Scrape()
 	if e != nil {
 		return domain.Pageinfo{}, e
 	}
@@ -32,31 +42,32 @@ func Extract(r *domain.Request) (domain.Pageinfo, error) {
 	if err != nil {
 		return domain.Pageinfo{}, err
 	}
-	result, err := parsePage(doc, r.URL)
+	parser := NewParserSvc(doc)
+	result, err := parser.ParsePage(svc.request.URL)
 	if err != nil {
 		return domain.Pageinfo{}, err
 	}
 	return result, nil
 }
 
-func scrape(url string) (*http.Response, error) {
-	log.Println("scraping ", url)
-	resp, e := http.Get(url)
+func (svc *extractorSVC) Scrape() (*http.Response, error) {
+	log.Println("scraping ", svc.request.URL)
+	resp, e := http.Get(svc.request.URL)
 	if e != nil {
 		return nil, e
 	}
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("could not get response from url : ", url)
+		return nil, fmt.Errorf("could not get response from url : ", svc.request.URL)
 	}
 	return resp, nil
 }
 
-func Validate(r *domain.Request) error {
-	if r.URL == "" {
+func (svc *extractorSVC) Validate() error {
+	if svc.request.URL == "" {
 		return errors.New("no url specified")
 	}
 	// check if URL is valid
-	_, e := url.ParseRequestURI(r.URL)
+	_, e := url.ParseRequestURI(svc.request.URL)
 	if e != nil {
 		return errors.New("invalid url")
 	}

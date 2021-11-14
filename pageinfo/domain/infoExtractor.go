@@ -1,5 +1,7 @@
 package domain
 
+import "net/http"
+
 type Pageinfo struct {
 	HTMLVersion string `json:"htmlversion"`
 	PageTitle   string `json:"pagetitle"`
@@ -26,4 +28,10 @@ type Head struct {
 
 type Request struct {
 	URL string `json:"url"`
+}
+
+type Service interface {
+	Extract() (Pageinfo, error)
+	Scrape() (*http.Response, error)
+	Validate() error
 }
