@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// testing the heartbeat function
+// expected: 200 ok
 func TestHeartBeat(t *testing.T) {
 	req, err := http.NewRequest("GET", "/heartbeat", nil)
 	if err != nil {
@@ -25,6 +27,8 @@ func TestHeartBeat(t *testing.T) {
 	assert.Equal(t, rr.Code, http.StatusOK)
 }
 
+// testing Webpageinfo function without request body
+// expected: 400 bad request
 func TestWebPageInfoEmptyReq(t *testing.T) {
 	r := []byte(`{}`)
 	req, err := http.NewRequest("POST", "/webpageinfo", bytes.NewBuffer(r))
@@ -38,6 +42,8 @@ func TestWebPageInfoEmptyReq(t *testing.T) {
 	assert.Equal(t, rr.Code, http.StatusBadRequest)
 }
 
+// testing Webpageinfo function with nil request body
+// expected: 400 bad request
 func TestWebPageInfoEmptyReq2(t *testing.T) {
 	req, err := http.NewRequest("POST", "/webpageinfo", nil)
 	if err != nil {
@@ -50,6 +56,8 @@ func TestWebPageInfoEmptyReq2(t *testing.T) {
 	assert.Equal(t, rr.Code, http.StatusBadRequest)
 }
 
+// testing Webpageinfo function with nil request body
+// expected: 400 bad request
 func TestWebPageInfoEmptyReq3(t *testing.T) {
 	r := []byte(nil)
 	req, err := http.NewRequest("POST", "/webpageinfo", bytes.NewBuffer(r))
@@ -63,6 +71,8 @@ func TestWebPageInfoEmptyReq3(t *testing.T) {
 	assert.Equal(t, rr.Code, http.StatusBadRequest)
 }
 
+// testing Webpageinfo function with proper request body
+// expected: 200 ok
 func TestWebPageInfoEmptyReq4(t *testing.T) {
 	mockSvc := new(mocks.Service)
 	p := domain.Pageinfo{
@@ -97,6 +107,8 @@ func TestWebPageInfoEmptyReq4(t *testing.T) {
 	assert.Equal(t, rr.Code, http.StatusOK)
 }
 
+// testing Webpageinfo function with empty request body
+// expected: 400 bad request
 func TestWebPageInfoEmptyReq5(t *testing.T) {
 	mockSvc := new(mocks.Service)
 	p := domain.Pageinfo{}

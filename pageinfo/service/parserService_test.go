@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// dummy html string for testing
 const htmlDoc = `<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
@@ -38,6 +39,11 @@ const htmlDoc = `<!DOCTYPE html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>`
 
+// the below function tests the ParsePage method
+// it reads the html string above
+// and finds the final input to be sent to the client
+// expected :the title should be equal to "Home24 web page information tool"
+// in the final response object
 func TestParsePage(t *testing.T) {
 	str := strings.NewReader(htmlDoc)
 	d, _ := goquery.NewDocumentFromReader(str)
@@ -46,6 +52,10 @@ func TestParsePage(t *testing.T) {
 	assert.Equal(t, res.PageTitle, "Home24 web page information tool")
 }
 
+// the below function tests the ParseHtmlVersion method
+// it reads the html string above
+// and finds the version of the html
+// expected :the version should be equal to "HTML 5.0"
 func TestParseHtmlVersion(t *testing.T) {
 	str := strings.NewReader(htmlDoc)
 	d, _ := goquery.NewDocumentFromReader(str)
@@ -54,14 +64,22 @@ func TestParseHtmlVersion(t *testing.T) {
 	assert.Equal(t, res.HTMLVersion, "HTML 5.0")
 }
 
+// the below function tests the ParseHead method
+// it reads the html string above
+// and finds the count of headings h1-h6
+// expected :the h1 count in the above html string is 1
 func TestParseHead(t *testing.T) {
 	str := strings.NewReader(htmlDoc)
 	d, _ := goquery.NewDocumentFromReader(str)
 	p := service.NewParserSvc(d)
 	res, _ := p.ParsePage("http://www.google.com")
-	assert.GreaterOrEqual(t, res.HeadingData.H1, 1)
+	assert.Equal(t, res.HeadingData.H1, 1)
 }
 
+// the below function tests the ParseTitle method
+// it reads the html string above
+// and finds the title of the page
+// expected :the title should be "Home24 web page information tool"
 func TestParseTitle(t *testing.T) {
 	str := strings.NewReader(htmlDoc)
 	d, _ := goquery.NewDocumentFromReader(str)
