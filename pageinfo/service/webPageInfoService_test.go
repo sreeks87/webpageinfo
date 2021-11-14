@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// function to test the  Exctract method
+// pass a real body, expects no error in response
 func TestExtract(t *testing.T) {
 	request := domain.Request{
 		URL: "http://www.example.com",
@@ -24,6 +26,8 @@ func TestExtract(t *testing.T) {
 	assert.Equal(t, e, nil)
 }
 
+// function to test Extract with invalid url
+// expected error
 func TestExtractError(t *testing.T) {
 	request := domain.Request{
 		URL: "http",
@@ -37,6 +41,8 @@ func TestExtractError(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
+// funtion to test the Extract method,
+// when the internal call to Scrape returns error.
 func TestExtractErrorScrape(t *testing.T) {
 	request := domain.Request{
 		URL: "http://www.exampleexapleexampleexample.com",
@@ -50,6 +56,10 @@ func TestExtractErrorScrape(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
+// function to test Scrape method
+// mock the external http call to rstrict network call
+// dummy http service returns bad request
+// expects not nil error
 func TestScrape(t *testing.T) {
 	httpmock.Activate()
 	httpmock.RegisterResponder("GET", "http://www.exampleexapleexampleexample.com",
@@ -63,6 +73,10 @@ func TestScrape(t *testing.T) {
 	_, e := service.Scrape()
 	assert.NotEqual(t, e, nil)
 }
+
+// function to test Scrape method
+// provide valid inputs and mock the external http call
+// expects nil error
 
 func TestScrape2(t *testing.T) {
 	httpmock.Activate()
@@ -78,6 +92,9 @@ func TestScrape2(t *testing.T) {
 	assert.Equal(t, e, nil)
 }
 
+// function to test Validate method
+// provide valid inputs
+// expects nil error
 func TestValidate(t *testing.T) {
 	request := domain.Request{
 		URL: "http://www.example.com",
@@ -87,6 +104,10 @@ func TestValidate(t *testing.T) {
 	e := service.Validate()
 	assert.Equal(t, e, nil)
 }
+
+// function to test Validate method
+// provide invalid inputs
+// expects not nil error
 
 func TestValidate2(t *testing.T) {
 	request := domain.Request{
@@ -98,6 +119,9 @@ func TestValidate2(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
+// function to test Validate method
+// provide invalid inputs with empty url
+// expects not nil error
 func TestValidate3(t *testing.T) {
 	request := domain.Request{
 		URL: "",

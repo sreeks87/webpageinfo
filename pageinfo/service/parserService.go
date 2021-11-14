@@ -25,7 +25,7 @@ func NewParserSvc(d *goquery.Document) domain.Parser {
 	}
 }
 
-// function to parse the page and find all the details required for the client
+// ParsePage function to parse the page and find all the details required for the client
 // input : url, document via the reciever type
 func (parser *parserSVC) ParsePage(url string) (domain.Pageinfo, error) {
 
@@ -69,7 +69,7 @@ func (parser *parserSVC) ParsePage(url string) (domain.Pageinfo, error) {
 	return pageinfo, nil
 }
 
-// the below functions extracts the version number of the document
+// the ParseHtmlVersion functions extracts the version number of the document
 // assumption : the root html node will have the doctype in one of the belwo formats
 // <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 // <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -96,7 +96,7 @@ func (parser *parserSVC) ParseHtmlVersion() (string, error) {
 	return version, nil
 }
 
-// the below function checks the presense of a login form in the html document
+// the ParseLoginForm function checks the presense of a login form in the html document
 // assumption : the login form will contain a password type of input
 // if yes, then login form present == true, else false
 // breaks with the first occurence of the password type
@@ -115,7 +115,7 @@ func (parser *parserSVC) ParseLoginForm() (bool, error) {
 	return found, nil
 }
 
-// the below function parses the document and gets the count of the headings from h1-h6
+// the ParseHead function parses the document and gets the count of the headings from h1-h6
 // input : html document
 // output: the Head struct with the count
 func (parser *parserSVC) ParseHead() (domain.Head, error) {
@@ -138,7 +138,7 @@ func (parser *parserSVC) ParseHead() (domain.Head, error) {
 	return headCount, nil
 }
 
-// The below function does 3 things
+// The ParseLinks function does 3 things
 // 1. it checks if the link is internal
 // assumption : a link is considered internal if it starts in the
 // href with / or the same basepath of url
@@ -225,7 +225,7 @@ func (parser *parserSVC) ParseLinks(url string) (domain.Links, error) {
 
 }
 
-//the below fucntion parses the title of the html doc
+//the ParseTitle function parses the title of the html doc
 // breaks with the first occurence of the title tag
 func (parser *parserSVC) ParseTitle() (string, error) {
 	var title string
@@ -237,7 +237,7 @@ func (parser *parserSVC) ParseTitle() (string, error) {
 	return title, nil
 }
 
-//the fucntion to concurrenlty access the links
+//concurrentLinkAccess to concurrenlty access the links
 // assumption : the raw url from the html document is used as-is
 // if the page is not accessible, add  the inaccessible links counter
 func concurrentLinkAccess(link string, wg *sync.WaitGroup, out chan<- int) {
@@ -264,7 +264,7 @@ func concurrentLinkAccess(link string, wg *sync.WaitGroup, out chan<- int) {
 
 }
 
-// this will monitor the dirrent concurrently running funcions and the channel usage
+// checkChan will monitor the dirrent concurrently running funcions and the channel usage
 func checkChan(wg *sync.WaitGroup, ch chan int) {
 	wg.Wait()
 	close(ch)

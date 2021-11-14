@@ -15,20 +15,24 @@ type extractorSVC struct {
 	request domain.Request
 }
 
+// create and restur a new Extractor service object
 func NewExtractorService(r domain.Request) domain.Service {
 	return &extractorSVC{
 		request: r,
 	}
 }
 
+// Extract method extracts the various details needed for response
+// takes a service object with URL
 func (svc *extractorSVC) Extract() (domain.Pageinfo, error) {
-
+	// call validate tovalidate the request
 	e := svc.Validate()
 	if e != nil {
 		log.Println("request validation failed")
 		return domain.Pageinfo{}, e
 
 	}
+	// scrape the URL passed in the request object
 	resp, e := svc.Scrape()
 	if e != nil {
 		return domain.Pageinfo{}, e
@@ -38,10 +42,13 @@ func (svc *extractorSVC) Extract() (domain.Pageinfo, error) {
 	if e != nil {
 		return domain.Pageinfo{}, nil
 	}
+	// create a new goquery document for easy parsing
 	doc, err := goquery.NewDocumentFromReader(body)
 	if err != nil {
 		return domain.Pageinfo{}, err
 	}
+	// create anew parserobject to call the different parse methods
+	// ParsePage will internally call other required methods
 	parser := NewParserSvc(doc)
 	result, err := parser.ParsePage(svc.request.URL)
 	if err != nil {
@@ -50,6 +57,9 @@ func (svc *extractorSVC) Extract() (domain.Pageinfo, error) {
 	return result, nil
 }
 
+// Scrape function scrapes/accesses the URL
+// takes a request object ans scrapes the response html
+//returns the http Response object
 func (svc *extractorSVC) Scrape() (*http.Response, error) {
 	log.Println("scraping ", svc.request.URL)
 	resp, e := http.Get(svc.request.URL)
@@ -62,7 +72,10 @@ func (svc *extractorSVC) Scrape() (*http.Response, error) {
 	return resp, nil
 }
 
+// Validate function validates the URL
+// takes a string url and responds with error, if invalid
 func (svc *extractorSVC) Validate() error {
+	// empty url check
 	if svc.request.URL == "" {
 		return errors.New("no url specified")
 	}
