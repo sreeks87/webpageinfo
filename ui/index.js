@@ -1,12 +1,14 @@
 $(document).ready(function () {
     
     $("form").submit(function (event) {
-        event.preventDefault();
-        console.log($("#website").val())
+      $("#tableDiv").css( "display","none")
+      $("#alertMsg").css( "display","none")
+      event.preventDefault();
+      console.log($("#website").val())
       var formData = {
         url: $("#website").val(),
         };
-    console.log(formData)
+      console.log(formData)
       $.ajax({
         type: "POST",
         url: "/webpageinfo",
@@ -22,7 +24,7 @@ $(document).ready(function () {
         headStr+="H4 : "+data.headings.h4count+"<br>"
         headStr+="H5 : "+data.headings.h5count+"<br>"
         headStr+="H6 : "+data.headings.h6count+"<br>"
-
+        
         $("#html").html(data.htmlversion)
         $("#title").html(data.pagetitle)
         $("#headingcount").html(headStr)
@@ -30,6 +32,16 @@ $(document).ready(function () {
         $("#external").html(data.links.externallinks)
         $("#broken").html(data.links.inaccessiblelinks)
         $("#login").html(data.loginform.toString())
+
+        $("#tableDiv").css( "display","block")
+
+        
+      }).fail(function(xhr,stat,e){
+        console.log(xhr)
+        console.log(stat)
+        console.log(e)
+        $("#alertMsg").css( "display","block")
+        $("#msg").html(e + " - check the url and try again")
       });
   
       

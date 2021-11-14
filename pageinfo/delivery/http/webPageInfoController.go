@@ -23,10 +23,16 @@ func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 	req, e := ioutil.ReadAll(r.Body)
 	var resp domain.Pageinfo
 	if len(req) == 0 {
+		resp = domain.Pageinfo{
+			Error: e,
+		}
 		HandlePOSTError(400, resp, w)
 		return
 	}
 	if e != nil {
+		resp = domain.Pageinfo{
+			Error: e,
+		}
 		HandlePOSTError(400, resp, w)
 		return
 	}
@@ -35,6 +41,9 @@ func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := svc.Extract(&requestObj)
 	if err != nil {
+		resp = domain.Pageinfo{
+			Error: err,
+		}
 		HandlePOSTError(400, resp, w)
 		return
 	}

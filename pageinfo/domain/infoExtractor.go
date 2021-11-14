@@ -27,6 +27,7 @@ type Head struct {
 type Request struct {
 	URL string `json:"url"`
 }
-type InfoExtractor interface {
-	Extract(string) (Pageinfo, error)
-}
+
+// type InfoExtractor interface {
+// 	Extract(string) (Pageinfo, error)
+// }
