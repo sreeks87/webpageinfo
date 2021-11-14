@@ -41,7 +41,7 @@ func parsePage(doc *goquery.Document, url string) (domain.Pageinfo, error) {
 		HeadingData: head,
 		LinkData:    links,
 		LoginForm:   login,
-		Error:       nil,
+		Error:       "",
 	}
 
 	return pageinfo, nil

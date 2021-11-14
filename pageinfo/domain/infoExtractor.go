@@ -6,7 +6,7 @@ type Pageinfo struct {
 	HeadingData Head   `json:"headings"`
 	LinkData    Links  `json:"links"`
 	LoginForm   bool   `json:"loginform"`
-	Error       error  `json:"error"`
+	Error       string `json:"error"`
 }
 
 type Links struct {
@@ -27,7 +27,3 @@ type Head struct {
 type Request struct {
 	URL string `json:"url"`
 }
-
-// type InfoExtractor interface {
-// 	Extract(string) (Pageinfo, error)
-// }

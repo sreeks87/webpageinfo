@@ -36,12 +36,12 @@ $(document).ready(function () {
         $("#tableDiv").css( "display","block")
 
         
-      }).fail(function(xhr,stat,e){
-        console.log(xhr)
+      }).fail(function(resp,stat,e){
+        console.log(resp)
         console.log(stat)
         console.log(e)
         $("#alertMsg").css( "display","block")
-        $("#msg").html(e + " - check the url and try again")
+        $("#msg").html(e +" - "+ resp.responseJSON.error)
       });
   
       

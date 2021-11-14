@@ -20,8 +20,8 @@ func main() {
 	server := &http.Server{
 		Handler:      r,
 		Addr:         config.ADDRESS,
-		WriteTimeout: 150 * time.Second,
-		ReadTimeout:  150 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
 	}
 
 	log.Fatal(server.ListenAndServe())
