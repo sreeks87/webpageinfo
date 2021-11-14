@@ -57,7 +57,7 @@ func (svc *extractorSVC) Scrape() (*http.Response, error) {
 		return nil, e
 	}
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("could not get response from url : ", svc.request.URL)
+		return nil, fmt.Errorf("could not get response from url : %s", svc.request.URL)
 	}
 	return resp, nil
 }
