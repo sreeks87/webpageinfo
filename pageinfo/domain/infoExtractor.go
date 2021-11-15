@@ -42,7 +42,7 @@ type Request struct {
 // Extraction of data, Scraping/Accessing the
 // links and validating the request
 type Service interface {
-	Extract() (Pageinfo, error)
+	Extract() (*Pageinfo, error)
 	Scrape() (*http.Response, error)
 	Validate() error
 }

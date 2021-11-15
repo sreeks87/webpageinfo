@@ -24,35 +24,35 @@ func NewExtractorService(r domain.Request) domain.Service {
 
 // Extract method extracts the various details needed for response
 // takes a service object with URL
-func (svc *extractorSVC) Extract() (domain.Pageinfo, error) {
+func (svc *extractorSVC) Extract() (*domain.Pageinfo, error) {
 	// call validate tovalidate the request
 	e := svc.Validate()
 	if e != nil {
 		log.Println("request validation failed")
-		return domain.Pageinfo{}, e
+		return nil, e
 
 	}
 	// scrape the URL passed in the request object
 	resp, e := svc.Scrape()
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	defer resp.Body.Close()
 	body := resp.Body
 	if e != nil {
-		return domain.Pageinfo{}, nil
+		return nil, nil
 	}
 	// create a new goquery document for easy parsing
 	doc, err := goquery.NewDocumentFromReader(body)
 	if err != nil {
-		return domain.Pageinfo{}, err
+		return nil, err
 	}
 	// create anew parserobject to call the different parse methods
 	// ParsePage will internally call other required methods
 	parser := NewParserSvc(doc)
 	result, err := parser.ParsePage(svc.request.URL)
 	if err != nil {
-		return domain.Pageinfo{}, err
+		return nil, err
 	}
 	return result, nil
 }

@@ -27,7 +27,7 @@ func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	req, e := ioutil.ReadAll(r.Body)
-	var resp domain.Pageinfo
+	var resp *domain.Pageinfo
 	// checking  if the request body is nil or empty, then return error
 	if len(req) == 0 || req == nil {
 

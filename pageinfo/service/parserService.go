@@ -27,46 +27,46 @@ func NewParserSvc(d *goquery.Document) domain.Parser {
 
 // ParsePage function to parse the page and find all the details required for the client
 // input : url, document via the reciever type
-func (parser *parserSVC) ParsePage(url string) (domain.Pageinfo, error) {
+func (parser *parserSVC) ParsePage(url string) (*domain.Pageinfo, error) {
 
 	// parse the document and find the headings count
 	head, e := parser.ParseHead()
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	// parse the document to find the different types of the links
 	// external,internal,inaccessible
 	links, e := parser.ParseLinks(url)
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	// parse the document and find the title
 	title, e := parser.ParseTitle()
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	// parse the document and find the html version
 	version, e := parser.ParseHtmlVersion()
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	// parse the document and find the presence of a login form
 	login, e := parser.ParseLoginForm()
 	if e != nil {
-		return domain.Pageinfo{}, e
+		return nil, e
 	}
 	// final repsonse based on all the funtions above.
 	// this will be the final response
 	pageinfo := domain.Pageinfo{
 		HTMLVersion: version,
 		PageTitle:   title,
-		HeadingData: head,
-		LinkData:    links,
+		HeadingData: *head,
+		LinkData:    *links,
 		LoginForm:   login,
 		Error:       "",
 	}
 
-	return pageinfo, nil
+	return &pageinfo, nil
 }
 
 // the ParseHtmlVersion functions extracts the version number of the document
@@ -118,7 +118,7 @@ func (parser *parserSVC) ParseLoginForm() (bool, error) {
 // the ParseHead function parses the document and gets the count of the headings from h1-h6
 // input : html document
 // output: the Head struct with the count
-func (parser *parserSVC) ParseHead() (domain.Head, error) {
+func (parser *parserSVC) ParseHead() (*domain.Head, error) {
 	head := map[string]int{"h1": 0, "h2": 0, "h3": 0, "h4": 0, "h5": 0, "h6": 0}
 	for k, _ := range head {
 		log.Println("-------------------------HEADING ", k, "---------------------")
@@ -135,7 +135,7 @@ func (parser *parserSVC) ParseHead() (domain.Head, error) {
 		H6: head["h6"],
 	}
 
-	return headCount, nil
+	return &headCount, nil
 }
 
 // The ParseLinks function does 3 things
@@ -150,7 +150,7 @@ func (parser *parserSVC) ParseHead() (domain.Head, error) {
 // make a get call to the link concurrenlty.
 // the input to this concurrent function will be the links map urlSet
 // this is to make sure the links are not duplicated in the input to the function
-func (parser *parserSVC) ParseLinks(url string) (domain.Links, error) {
+func (parser *parserSVC) ParseLinks(url string) (*domain.Links, error) {
 	log.Println("-------------------------Links---------------------")
 	parsedURL, _ := u.Parse(url)
 	baseURL := parsedURL.Scheme + "://" + parsedURL.Host
@@ -221,7 +221,7 @@ func (parser *parserSVC) ParseLinks(url string) (domain.Links, error) {
 	}
 
 	log.Println("link response ", links)
-	return links, nil
+	return &links, nil
 
 }
 
