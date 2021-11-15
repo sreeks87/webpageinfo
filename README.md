@@ -6,7 +6,7 @@ A working version can be found here - link_to_page
 
 The app expects a valid url to be provided in the search bar.
 
-It then extracts the below details based on assumption as mentioed below.
+It then extracts the details based on assumption as mentioed below.
 
 1. HTML Version : The html version of the document is extracted based on
 https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions of HTML.
@@ -15,7 +15,7 @@ https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions
 
     The defaultversion is HTML version 5.
 
-    For any lowerversion, the root html node will have the doctype in the below formats
+    For any lower version, the root html node will have the doctype in the below formats
 
     `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">`
 
@@ -46,9 +46,10 @@ https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions
     1. The login form will contain an input of type password 
     If yes, then login form present == true, else false
     
-    The app has been built in go, version `1.16`
 
 # To run this app locally
+
+The app has been built in go, version `1.16`
 
 Prerequisite
 1. Golang installation
@@ -65,6 +66,9 @@ Run locally
 
 5. Port can be modified in the config file
 
-### Enhancements
+
+### Design
+
+### Further Enhancements
 1. 
 
