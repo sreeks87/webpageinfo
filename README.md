@@ -6,7 +6,7 @@ A working version can be found here - link_to_page
 
 The app expects a valid url to be provided in the search bar.
 
-It then extracts the below details based on assumption as mentioed below.
+It then extracts the details based on assumption as mentioed below.
 
 1. HTML Version : The html version of the document is extracted based on
 https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions of HTML.
