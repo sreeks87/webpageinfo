@@ -1,4 +1,4 @@
-# Webpageinfo
+# Home24 Webpageinfo
 The app takes a webpage url and displays information about it.
 A working version can be found here - https://webpageinfo.eu-gb.mybluemix.net/ui/ 
 
