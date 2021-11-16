@@ -1,6 +1,6 @@
 package domain
 
-// this is the document parser interface
+// Parser is the document parser interface
 // it is responsible for the parsing and calculation of
 // title/html version/headings/links/title
 type Parser interface {

@@ -39,7 +39,7 @@ const htmlDoc = `<!DOCTYPE html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>`
 
-// the below function tests the ParsePage method
+// TestParsePage function tests the ParsePage method
 // it reads the html string above
 // and finds the final input to be sent to the client
 // expected :the title should be equal to "Home24 web page information tool"
@@ -52,7 +52,7 @@ func TestParsePage(t *testing.T) {
 	assert.Equal(t, res.PageTitle, "Home24 web page information tool")
 }
 
-// the below function tests the ParseHtmlVersion method
+// TestParseHtmlVersion function tests the ParseHtmlVersion method
 // it reads the html string above
 // and finds the version of the html
 // expected :the version should be equal to "HTML 5.0"
@@ -64,7 +64,7 @@ func TestParseHtmlVersion(t *testing.T) {
 	assert.Equal(t, res.HTMLVersion, "HTML 5.0")
 }
 
-// the below function tests the ParseHead method
+// TestParseHead function tests the ParseHead method
 // it reads the html string above
 // and finds the count of headings h1-h6
 // expected :the h1 count in the above html string is 1
@@ -76,7 +76,7 @@ func TestParseHead(t *testing.T) {
 	assert.Equal(t, res.HeadingData.H1, 1)
 }
 
-// the below function tests the ParseTitle method
+// TestParseTitle function tests the ParseTitle method
 // it reads the html string above
 // and finds the title of the page
 // expected :the title should be "Home24 web page information tool"

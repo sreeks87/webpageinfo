@@ -11,15 +11,15 @@ import (
 	svc "github.com/sreeks87/webpageinfo/pageinfo/service"
 )
 
-// a heartbeat method used for testing the api
+// Heartbeat is a heartbeat method used for testing the api
 func Heartbeat(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, bytes.NewBuffer([]byte(`{"Status":"Ok"}`)))
 }
 
-// the actual webpage information extractor
+// Webpageinfo is the the actual webpage information extractor
 // the /webpageinfo invokes this function
 // returns error when the request is nil/empty
-//or if the extractor service returns error
+// or if the extractor service returns any error
 func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 	// if the body itself is nil, then return error
 	if r.Body == nil {
@@ -34,7 +34,7 @@ func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 		HandlePOSTError(http.StatusBadRequest, "request is nil or empty", w)
 		return
 	}
-	// if the readall fails for any reason the propagate the error to the caller
+	// if the readall() fails for any reason the propagate the error to the caller
 	if e != nil {
 
 		HandlePOSTError(http.StatusBadRequest, e.Error(), w)
@@ -57,7 +57,7 @@ func Webpageinfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&resp)
 }
 
-// function to handle post errors
+// HandlePOSTError function to handle post errors
 // writes the error into the Pageinfo struct
 func HandlePOSTError(status int, e string, w http.ResponseWriter) {
 	resp := domain.Pageinfo{

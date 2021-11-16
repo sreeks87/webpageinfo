@@ -15,7 +15,7 @@ type extractorSVC struct {
 	request domain.Request
 }
 
-// create and restur a new Extractor service object
+// NewExtractorService creates and returns a new Extractor service object
 func NewExtractorService(r domain.Request) domain.Service {
 	return &extractorSVC{
 		request: r,
@@ -24,6 +24,8 @@ func NewExtractorService(r domain.Request) domain.Service {
 
 // Extract method extracts the various details needed for response
 // takes a service object with URL
+// input : none
+// output :PAgeinfo,error
 func (svc *extractorSVC) Extract() (*domain.Pageinfo, error) {
 	// call validate tovalidate the request
 	e := svc.Validate()
@@ -58,8 +60,8 @@ func (svc *extractorSVC) Extract() (*domain.Pageinfo, error) {
 }
 
 // Scrape function scrapes/accesses the URL
-// takes a request object ans scrapes the response html
-//returns the http Response object
+// input:  request object and scrapes the response html
+// output : returns the http Response object
 func (svc *extractorSVC) Scrape() (*http.Response, error) {
 	log.Println("scraping ", svc.request.URL)
 	resp, e := http.Get(svc.request.URL)

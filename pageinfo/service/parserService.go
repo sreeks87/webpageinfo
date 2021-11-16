@@ -13,12 +13,12 @@ import (
 // constant to match with the "password" input type
 const PASSWORD = "password"
 
-// the struct that implements the parser service
+// parserSVC is the struct that implements the parser service
 type parserSVC struct {
 	doc *goquery.Document
 }
 
-// the below function creates and returns a parser object
+// NewParserSvc function creates and returns a parser object
 func NewParserSvc(d *goquery.Document) domain.Parser {
 	return &parserSVC{
 		doc: d,
@@ -27,6 +27,7 @@ func NewParserSvc(d *goquery.Document) domain.Parser {
 
 // ParsePage function to parse the page and find all the details required for the client
 // input : url, document via the reciever type
+// output : Pageinfo,error
 func (parser *parserSVC) ParsePage(url string) (*domain.Pageinfo, error) {
 
 	// parse the document and find the headings count
@@ -55,7 +56,7 @@ func (parser *parserSVC) ParsePage(url string) (*domain.Pageinfo, error) {
 	if e != nil {
 		return nil, e
 	}
-	// final repsonse based on all the funtions above.
+	// final repsonse based on all the functions above.
 	// this will be the final response
 	pageinfo := domain.Pageinfo{
 		HTMLVersion: version,
@@ -69,14 +70,16 @@ func (parser *parserSVC) ParsePage(url string) (*domain.Pageinfo, error) {
 	return &pageinfo, nil
 }
 
-// the ParseHtmlVersion functions extracts the version number of the document
-// assumption : the root html node will have the doctype in one of the belwo formats
+// ParseHtmlVersion functions extracts the version number of the document
+// Assumption : the root html node will have the doctype in one of the belwo formats
 // <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 // <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 // the common part of these version strings is as below
 // common part --> -//W3C//DTD [----]//EN
 // the below function extracts this string and returns as the version
 // Ref : https://www.w3.org/QA/2002/04/valid-dtd-list.html
+// input : none
+// output : version string, error
 func (parser *parserSVC) ParseHtmlVersion() (string, error) {
 	commonStart := "-//W3C//DTD"
 	commonEnd := "//EN"
@@ -84,8 +87,8 @@ func (parser *parserSVC) ParseHtmlVersion() (string, error) {
 	version := "HTML 5.0"
 	// checking if the document nodes contains one or more children
 	// if yes, find if the child has non zero attributes count
-	// assumption: t the 0th attribute of the 0th child will be the doctype
-	// replace the common parts of the string to extractonly the version string
+	// Assumption: the 1st attribute of the 1st child will be the doctype
+	// replace the common parts of the string to extract only the version string
 	if len(parser.doc.Selection.Nodes) > 0 {
 		if len(parser.doc.Selection.Nodes[0].FirstChild.Attr) > 0 {
 			vString := parser.doc.Selection.Nodes[0].FirstChild.Attr[0].Val
@@ -96,12 +99,15 @@ func (parser *parserSVC) ParseHtmlVersion() (string, error) {
 	return version, nil
 }
 
-// the ParseLoginForm function checks the presense of a login form in the html document
+// ParseLoginForm function checks the presense of a login form in the html document
 // assumption : the login form will contain a password type of input
 // if yes, then login form present == true, else false
 // breaks with the first occurence of the password type
+// input:none
+// output:boolean login exists or not, error
 func (parser *parserSVC) ParseLoginForm() (bool, error) {
 	found := false
+	// look for input tag and look for type==password
 	parser.doc.Find("input").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		in, _ := s.Attr("type")
 		log.Println("form input type ", in)
@@ -115,11 +121,12 @@ func (parser *parserSVC) ParseLoginForm() (bool, error) {
 	return found, nil
 }
 
-// the ParseHead function parses the document and gets the count of the headings from h1-h6
+// ParseHead function parses the document and gets the count of the headings from h1-h6
 // input : html document
 // output: the Head struct with the count
 func (parser *parserSVC) ParseHead() (*domain.Head, error) {
 	head := map[string]int{"h1": 0, "h2": 0, "h3": 0, "h4": 0, "h5": 0, "h6": 0}
+	// loop to find all the headings
 	for k, _ := range head {
 		log.Println("-------------------------HEADING ", k, "---------------------")
 		parser.doc.Find(k).Each(func(i int, s *goquery.Selection) {
@@ -138,13 +145,13 @@ func (parser *parserSVC) ParseHead() (*domain.Head, error) {
 	return &headCount, nil
 }
 
-// The ParseLinks function does 3 things
+// ParseLinks function does 3 things
 // 1. it checks if the link is internal
-// assumption : a link is considered internal if it starts in the
+// Assumption : a link is considered internal if it starts in the
 // href with / or the same basepath of url
 // 2. if the link is external
-// assumption : a link is external if the base path do not match and
-// has http as the prefix, this was done because some html pages were seen with comment ids as liks
+// Assumption : a link is external if the base path do not match and
+// has http as the prefix, this was done because some html pages were seen with comment ids as links
 // and these were getting treated as external liks
 // 3. if the link is accessible
 // make a get call to the link concurrenlty.
@@ -225,10 +232,11 @@ func (parser *parserSVC) ParseLinks(url string) (*domain.Links, error) {
 
 }
 
-//the ParseTitle function parses the title of the html doc
+//ParseTitle function parses the title of the html doc
 // breaks with the first occurence of the title tag
 func (parser *parserSVC) ParseTitle() (string, error) {
 	var title string
+	// looking for title in the document
 	parser.doc.Find("title").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		title = s.Text()
 		log.Println("title ->", title)
@@ -237,9 +245,9 @@ func (parser *parserSVC) ParseTitle() (string, error) {
 	return title, nil
 }
 
-//concurrentLinkAccess to concurrenlty access the links
-// assumption : the raw url from the html document is used as-is
-// if the page is not accessible, add  the inaccessible links counter
+//concurrentLinkAccess function to concurrenlty access the links
+// Assumption : the raw url from the html document is used as-is
+// if the page is not accessible,increment the inaccessible links counter
 func concurrentLinkAccess(link string, wg *sync.WaitGroup, out chan<- int) {
 
 	defer wg.Done()

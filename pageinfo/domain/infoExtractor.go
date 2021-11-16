@@ -2,7 +2,7 @@ package domain
 
 import "net/http"
 
-// the response struct
+// Pageinfo is the response struct
 // this will contain all the data required by the client
 type Pageinfo struct {
 	HTMLVersion string `json:"htmlversion"`
@@ -13,7 +13,7 @@ type Pageinfo struct {
 	Error       string `json:"error"`
 }
 
-// the count of different liks will be stored in this struct
+// Links is the count of different links
 // internal liks count
 // external linkscount
 // broken links count
@@ -23,7 +23,7 @@ type Links struct {
 	InaccessibleLinks int `json:"inaccessiblelinks"`
 }
 
-// this struct holds the heading count for header h1-h6
+// Head struct holds the heading count for header h1-h6
 type Head struct {
 	H1 int `json:"h1count"`
 	H2 int `json:"h2count"`
@@ -33,12 +33,12 @@ type Head struct {
 	H6 int `json:"h6count"`
 }
 
-// the request body fromt the client
+// Request is the request body from the client
 type Request struct {
 	URL string `json:"url"`
 }
 
-// the service interface will be responsible for the
+// Service is the actual service interface and will be responsible for the
 // Extraction of data, Scraping/Accessing the
 // links and validating the request
 type Service interface {

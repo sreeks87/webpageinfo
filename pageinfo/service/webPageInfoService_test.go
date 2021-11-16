@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// function to test the  Exctract method
+// TestExtract to test the  Exctract method
 // pass a real body, expects no error in response
 func TestExtract(t *testing.T) {
 	request := domain.Request{
@@ -26,7 +26,7 @@ func TestExtract(t *testing.T) {
 	assert.Equal(t, e, nil)
 }
 
-// function to test Extract with invalid url
+// TestExtractError to test Extract with invalid url
 // expected error
 func TestExtractError(t *testing.T) {
 	request := domain.Request{
@@ -41,7 +41,7 @@ func TestExtractError(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
-// funtion to test the Extract method,
+// TestExtractErrorScrape to test the Extract method,
 // when the internal call to Scrape returns error.
 func TestExtractErrorScrape(t *testing.T) {
 	request := domain.Request{
@@ -56,7 +56,7 @@ func TestExtractErrorScrape(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
-// function to test Scrape method
+// TestScrape to test Scrape method
 // mock the external http call to rstrict network call
 // dummy http service returns bad request
 // expects not nil error
@@ -74,7 +74,7 @@ func TestScrape(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
-// function to test Scrape method
+// TestScrape2 to test Scrape method
 // provide valid inputs and mock the external http call
 // expects nil error
 
@@ -92,7 +92,7 @@ func TestScrape2(t *testing.T) {
 	assert.Equal(t, e, nil)
 }
 
-// function to test Validate method
+// TestValidate to test Validate method
 // provide valid inputs
 // expects nil error
 func TestValidate(t *testing.T) {
@@ -105,7 +105,7 @@ func TestValidate(t *testing.T) {
 	assert.Equal(t, e, nil)
 }
 
-// function to test Validate method
+// TestValidate2 to test Validate method
 // provide invalid inputs
 // expects not nil error
 
@@ -119,7 +119,7 @@ func TestValidate2(t *testing.T) {
 	assert.NotEqual(t, e, nil)
 }
 
-// function to test Validate method
+// TestValidate3 to test Validate method
 // provide invalid inputs with empty url
 // expects not nil error
 func TestValidate3(t *testing.T) {
