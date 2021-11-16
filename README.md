@@ -58,7 +58,7 @@ Prerequisite
 
 Run locally
 
-1. git clone the repository
+1. `git clone the repository`
 
 2. Download the dependencies `go mod download`
 
@@ -80,13 +80,31 @@ This is where the implementation of the interfaces defined in the domain (below)
 
 3. Domain layer, this defines the domain model and any interfaces being used.
 
-The application makes external call to the URL provided by the user, this is therefore defined as an Interface called Service. The service interface is responsible for three functions
-    1. Validate the request from the user
-    2. Scrape the URL to get the html document
-    3. Extract the html details from the document
-    The extraction function inside the Service further depends on the Parser. The parser used for making it easy to parse the html is goquery. Therefore it has also been defined as an interface, if tommorow we decide to use a different parser than this, we could do so by simply writing another parser impelementation. This also makes testing easier.
-    4. A simple html page with a JS serves as the frontend UI.
-    5. Unit tests and mocks have been written to cover most of the code
+The application makes external call to the URL provided by the user, this is therefore defined as an Interface called Service. 
+
+The service interface is responsible for three functions
+
+1. Validate the request from the user
+
+2. Scrape the URL to get the html document
+
+3. Extract the html details from the document
+
+The extraction function inside the Service further depends on the Parser. The parser used for making it easy to parse the html is goquery. Therefore it has also been defined as an interface, if tommorow we decide to use a different parser than this, we could do so by simply writing another parser impelementation. This also makes testing easier.
+
+- A simple html page with JS serves as the frontend UI. When the user inputs the URL and clicks the search button, a POST call is made from UI to the backend API.
+
+### API Details
+
+        POST http://localhost:8080/webpageinfo
+
+        {
+            
+        "url":"http://localhost:8080/ui/"
+        
+        }
+
+- Unit tests and mocks have been written to cover most of the code
 
 ### Deployment and hosting:
     
