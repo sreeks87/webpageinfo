@@ -13,7 +13,7 @@ https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions
 
     ###  Assumptions : 
 
-    The defaultversion is HTML version 5.
+    The default version is HTML version 5.
 
     For any lower version, the root html node will have the doctype in the below formats
 
@@ -25,13 +25,13 @@ https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions
 
     `-//W3C//DTD [----]//EN`
 
-    HTML version will be eextracted based on this information
+    HTML version will be extracted based on this information
 
 2. Page Title : Extracts the page title, the text inside the title tag.
 
 3. Heading count by level : Extracts the count of h1 - h6 headings in the html
 
-4. Amount of internal,external, inaacessible links
+4. Amount of internal,external, inaccessible links
 
     ### Assumptions : 
     
@@ -45,7 +45,7 @@ https://www.w3.org/QA/2002/04/valid-dtd-list.html, useful for the older versions
 5. Presence of  a login form.
 
     ### Assumptions : 
-    1. The login form will contain an input of type password 
+    1. The login form will contain an input of type password. 
     If yes, then login form present == true, else false
     
 
@@ -90,7 +90,7 @@ The service interface is responsible for three functions
 
 3. Extract the html details from the document
 
-The extraction function inside the Service further depends on the Parser. The parser used for making it easy to parse the html is goquery. Therefore it has also been defined as an interface, if tommorow we decide to use a different parser than this, we could do so by simply writing another parser impelementation. This also makes testing easier.
+The extraction function inside the Service further depends on the Parser. The parser used for making it easy to parse the html is goquery. Therefore it has also been defined as an interface, if tommorow we decide to use a different parser than this, we could do so by simply writing another parser implementation. This also makes testing easier.
 
 - A simple html page with JS serves as the frontend UI. When the user inputs the URL and clicks the search button, a POST call is made from UI to the backend API.
 
@@ -122,7 +122,7 @@ We could also take a look at retry mechanism if the links are delayed/not respon
 
 4. To reduce the external calls, a caching mechanism could be implemented, so that we cache the results and serve the response from the cache.
 
-5. A basic logging has been implemented, but we could take a look at better logging mechanisms to log what level of tracing is requird for a particular environment. We could also log the messages to a repository to enable easy querying and extraction via tools like splunk, to help us debug the issues.
+5. A basic logging has been implemented, but we could take a look at better logging mechanisms to log what level of tracing is required for a particular environment. We could also log the messages to a repository to enable easy querying and extraction via tools like splunk, to help us debug the issues.
 
 
 
